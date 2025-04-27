@@ -1,0 +1,1 @@
+<template><h1>Inertia + Vue funcionando!</h1></template>
