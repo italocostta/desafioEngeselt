@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateConfeitariaRequest;
 use App\Services\ViaCepService;
 use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 
 class ConfeitariaController extends Controller
@@ -36,35 +37,33 @@ class ConfeitariaController extends Controller
         ]);
     }
 
-    public function store(StoreConfeitariaRequest $request): RedirectResponse
+    public function store(Request $request)
     {
-        $data = $request->validated();
-
-        // Autopreenchimento do CEP
-        if ($viaCep = ViaCepService::consultar($data['cep'])) {
-            $data = array_merge($data, [
-                'rua'    => $viaCep['logradouro']  ?? $data['rua'],
-                'bairro' => $viaCep['bairro']      ?? $data['bairro'],
-                'cidade' => $viaCep['localidade']  ?? $data['cidade'],
-                'estado' => $viaCep['uf']          ?? $data['estado'],
-            ]);
-        }
+        $data = $request->validate([
+            'nome' => 'required|string|max:255',
+            'telefone' => 'required|string',
+            'cep' => 'required|string',
+            'rua' => 'required|string',
+            'numero' => 'required|string',
+            'bairro' => 'required|string',
+            'cidade' => 'required|string',
+            'estado' => 'required|string',
+        ]);
 
         Confeitaria::create($data);
 
-        return redirect()->route('confeitarias.index')
-            ->with('success', 'Confeitaria cadastrada!');
+        return redirect()->route('confeitarias.index')->with('success', 'Confeitaria criada com sucesso!');
     }
 
     public function show(Confeitaria $confeitaria)
-{
-    $confeitaria->load('produtos'); // carrega os produtos junto
+    {
+        $confeitaria->load('produtos'); // carrega os produtos junto
 
-    return Inertia::render('Confeitarias/Show', [
-        'confeitaria' => $confeitaria,
-        'produtos' => $confeitaria->produtos, // aqui envia os produtos!
-    ]);
-}
+        return Inertia::render('Confeitarias/Show', [
+            'confeitaria' => $confeitaria,
+            'produtos' => $confeitaria->produtos, // aqui envia os produtos!
+        ]);
+    }
 
     public function edit(Confeitaria $confeitaria)
     {

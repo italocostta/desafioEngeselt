@@ -25,7 +25,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- CEP -->
       <div class="w-full max-w-xs">
         <label class="block text-chocolate font-semibold mb-2">CEP</label>
@@ -46,6 +46,17 @@
           v-model="form.estado"
           type="text"
           maxlength="2"
+          class="w-full p-3 border border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          required
+        />
+      </div>
+
+      <!-- Número -->
+      <div class="w-full max-w-xs">
+        <label class="block text-chocolate font-semibold mb-2">Número</label>
+        <input
+          v-model="form.numero"
+          type="text"
           class="w-full p-3 border border-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
           required
         />
@@ -121,6 +132,7 @@ const form = useForm({
   telefone: props.initialData.telefone ?? '',
   cep: props.initialData.cep ?? '',
   rua: props.initialData.rua ?? '',
+  numero: props.initialData.numero ?? '', 
   bairro: props.initialData.bairro ?? '',
   cidade: props.initialData.cidade ?? '',
   estado: props.initialData.estado ?? ''
