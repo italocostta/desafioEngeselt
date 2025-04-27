@@ -1,6 +1,7 @@
 import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/inertia-vue3'
 import { InertiaProgress } from '@inertiajs/progress'
+import '../css/app.css';
 
 // Aqui o Vite “globa” todas as páginas .vue em ./Pages
 const pages = import.meta.glob('./Pages/**/*.vue')

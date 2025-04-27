@@ -2,30 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ViaCepService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class CepController extends Controller
 {
-    public function show(string $cep): JsonResponse
-    {
-        try {
-            $dados = ViaCepService::consultar($cep);
-        } catch (\Throwable $e) {
-            // loga o erro para depois inspecionar em storage/logs/laravel.log
-            Log::error('Erro ao consultar ViaCEP: '.$e->getMessage());
-            return response()->json([
-                'error' => 'Erro interno ao consultar CEP'
-            ], 500);
-        }
+    /**
+     * Busca informações de endereço a partir de um CEP informado.
+     *
+     * @param  string  $cep
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($cep)
+{
+    $cep = preg_replace('/[^0-9]/', '', $cep);
 
-        if (!$dados) {
-            return response()->json([
-                'error' => 'CEP não encontrado'
-            ], 404);
-        }
-
-        return response()->json($dados);
+    if (strlen($cep) !== 8) {
+        return response()->json(['erro' => 'CEP inválido'], 400);
     }
+
+    try {
+        $response = file_get_contents("https://viacep.com.br/ws/{$cep}/json/");
+        $data = json_decode($response, true);
+
+        if (isset($data['erro']) && $data['erro']) {
+            return response()->json(['erro' => 'CEP não encontrado'], 404);
+        }
+
+        return response()->json([
+            'rua'    => $data['logradouro'] ?? '',
+            'bairro' => $data['bairro'] ?? '',
+            'cidade' => $data['localidade'] ?? '',
+            'estado' => $data['uf'] ?? '',
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['erro' => 'Erro ao consultar o CEP'], 500);
+    }
+}
+
 }

@@ -57,12 +57,14 @@ class ConfeitariaController extends Controller
     }
 
     public function show(Confeitaria $confeitaria)
-    {
-        $confeitaria->load('produtos'); // carrega a relação de produtos
-        return Inertia::render('Confeitarias/Show', [
-            'confeitaria' => $confeitaria,
-        ]);
-    }
+{
+    $confeitaria->load('produtos'); // carrega os produtos junto
+
+    return Inertia::render('Confeitarias/Show', [
+        'confeitaria' => $confeitaria,
+        'produtos' => $confeitaria->produtos, // aqui envia os produtos!
+    ]);
+}
 
     public function edit(Confeitaria $confeitaria)
     {
